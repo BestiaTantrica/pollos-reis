@@ -7,6 +7,7 @@ import MetricsView from './components/MetricsView';
 import HealthView from './components/HealthView';
 import FinanceView from './components/FinanceView';
 import AIAssistantView from './components/AIAssistantView';
+import NonnaSimpleView from './components/NonnaSimpleView';
 import BatchModal from './components/BatchModal';
 import BackupModal from './components/BackupModal';
 import { INITIAL_BATCHES } from './data/defaultData';
@@ -39,6 +40,10 @@ export default function App() {
     return batches[0]?.id || 'lote-la-estanciera-40';
   });
 
+  const [appMode, setAppMode] = useState(() => {
+    return localStorage.getItem('pollos_reis_app_mode') || 'simple';
+  });
+
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   
@@ -46,6 +51,11 @@ export default function App() {
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
   const [editingBatch, setEditingBatch] = useState(null);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
+
+  // Guardar modo simple / avanzado
+  useEffect(() => {
+    localStorage.setItem('pollos_reis_app_mode', appMode);
+  }, [appMode]);
 
   // Guardar en localStorage cada vez que cambien los lotes
   useEffect(() => {
@@ -226,76 +236,118 @@ export default function App() {
 
       {/* Contenedor Principal */}
       <main className="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-4">
-        {/* Navegación para Pantallas Medianas y Grandes */}
-        <DesktopNavigation
-          activeTab={activeTab}
-          onSelectTab={setActiveTab}
-        />
+        {/* Selector de Modo: Fácil (Nonna) vs Completo */}
+        <div className="flex items-center justify-between mb-3 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setAppMode('simple')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                appMode === 'simple'
+                  ? 'bg-amber-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              <span>🏡 Modo Fácil (Nonna)</span>
+            </button>
+            <button
+              onClick={() => setAppMode('advanced')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                appMode === 'advanced'
+                  ? 'bg-slate-800 text-white shadow-sm'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              <span>📊 Modo Avanzado</span>
+            </button>
+          </div>
+          <span className="text-[11px] text-slate-500 font-medium hidden sm:inline">
+            {appMode === 'simple' ? 'Vista limpia sin tecnicismos para el galpón' : 'Gráficos, curvas y costos'}
+          </span>
+        </div>
 
-        {/* VISTAS DE CONTENIDO */}
-        {activeTab === 'dashboard' && (
-          <DashboardView
-            batch={currentBatch}
-            metrics={metrics}
-            onGoToDaily={() => setActiveTab('daily')}
-            onGoToAI={() => setActiveTab('ai')}
-            onGoToHealth={() => setActiveTab('health')}
-            onGoToFinance={() => setActiveTab('finance')}
-          />
-        )}
-
-        {activeTab === 'daily' && (
-          <DailyLogView
-            batch={currentBatch}
-            metrics={metrics}
-            onSaveLog={handleSaveLog}
-            onDeleteLog={handleDeleteLog}
-          />
-        )}
-
-        {activeTab === 'metrics' && (
-          <MetricsView
-            batch={currentBatch}
-            metrics={metrics}
-          />
-        )}
-
-        {activeTab === 'health' && (
-          <HealthView
-            batch={currentBatch}
-            metrics={metrics}
-            onUpdateVaccines={handleUpdateVaccines}
-            onAddTreatment={handleAddTreatment}
-            onDeleteTreatment={handleDeleteTreatment}
-          />
-        )}
-
-        {activeTab === 'finance' && (
-          <FinanceView
-            batch={currentBatch}
-            metrics={metrics}
-            onAddExpense={handleAddExpense}
-            onDeleteExpense={handleDeleteExpense}
-            onAddSale={handleAddSale}
-            onDeleteSale={handleDeleteSale}
-          />
-        )}
-
-        {activeTab === 'ai' && (
-          <AIAssistantView
+        {appMode === 'simple' ? (
+          <NonnaSimpleView
             batch={currentBatch}
             metrics={metrics}
             onSaveLog={handleSaveLog}
+            onSwitchToAdvanced={() => setAppMode('advanced')}
           />
+        ) : (
+          <>
+            {/* Navegación para Pantallas Medianas y Grandes */}
+            <DesktopNavigation
+              activeTab={activeTab}
+              onSelectTab={setActiveTab}
+            />
+
+            {/* VISTAS DE CONTENIDO */}
+            {activeTab === 'dashboard' && (
+              <DashboardView
+                batch={currentBatch}
+                metrics={metrics}
+                onGoToDaily={() => setActiveTab('daily')}
+                onGoToAI={() => setActiveTab('ai')}
+                onGoToHealth={() => setActiveTab('health')}
+                onGoToFinance={() => setActiveTab('finance')}
+              />
+            )}
+
+            {activeTab === 'daily' && (
+              <DailyLogView
+                batch={currentBatch}
+                metrics={metrics}
+                onSaveLog={handleSaveLog}
+                onDeleteLog={handleDeleteLog}
+              />
+            )}
+
+            {activeTab === 'metrics' && (
+              <MetricsView
+                batch={currentBatch}
+                metrics={metrics}
+              />
+            )}
+
+            {activeTab === 'health' && (
+              <HealthView
+                batch={currentBatch}
+                metrics={metrics}
+                onUpdateVaccines={handleUpdateVaccines}
+                onAddTreatment={handleAddTreatment}
+                onDeleteTreatment={handleDeleteTreatment}
+              />
+            )}
+
+            {activeTab === 'finance' && (
+              <FinanceView
+                batch={currentBatch}
+                metrics={metrics}
+                onAddExpense={handleAddExpense}
+                onDeleteExpense={handleDeleteExpense}
+                onAddSale={handleAddSale}
+                onDeleteSale={handleDeleteSale}
+              />
+            )}
+
+            {activeTab === 'ai' && (
+              <AIAssistantView
+                batch={currentBatch}
+                metrics={metrics}
+                onSaveLog={handleSaveLog}
+              />
+            )}
+          </>
         )}
       </main>
 
-      {/* Barra de Navegación Inferior Móvil (Sticky) */}
-      <Navigation
-        activeTab={activeTab}
-        onSelectTab={setActiveTab}
-        batchType={currentBatch?.type}
-      />
+      {/* Barra de Navegación Inferior Móvil (Sticky) solo en modo avanzado */}
+      {appMode === 'advanced' && (
+        <Navigation
+          activeTab={activeTab}
+          onSelectTab={setActiveTab}
+          batchType={currentBatch?.type}
+        />
+      )}
 
       {/* Modal de Crear / Editar Lote */}
       <BatchModal

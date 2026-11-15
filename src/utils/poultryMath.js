@@ -109,6 +109,14 @@ export function calculateBatchMetrics(batch) {
   const costPerKgLive = totalLiveBiomassKg > 0 ? Math.round(totalExpenses / totalLiveBiomassKg) : 0;
   const costPerMaple = Number(totalMaples) > 0 ? Math.round(totalExpenses / Number(totalMaples)) : 0;
 
+  // Control de Stock de Alimento (como en El Capataz)
+  const initialStockKg = Number(batch.feedStockKg) || 160; // 4 bolsas x 40kg
+  const remainingStockKg = Math.max(0, initialStockKg - totalFeedKg);
+  const remainingBags40 = (remainingStockKg / 40).toFixed(1);
+  const estimatedDaysOfFeedRemaining = todayFeedKg > 0 
+    ? Math.floor(remainingStockKg / todayFeedKg) 
+    : (currentLivingBirds > 0 ? Math.floor(remainingStockKg / (currentLivingBirds * 0.11)) : 20);
+
   return {
     initialQty,
     currentLivingBirds,
@@ -144,7 +152,11 @@ export function calculateBatchMetrics(batch) {
     netProfit,
     costPerBird,
     costPerKgLive,
-    costPerMaple
+    costPerMaple,
+    initialStockKg,
+    remainingStockKg,
+    remainingBags40,
+    estimatedDaysOfFeedRemaining
   };
 }
 

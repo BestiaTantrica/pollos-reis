@@ -98,6 +98,30 @@ export default function DashboardView({
       </div>
 
       {/* METRICAS ESPECÍFICAS SEGÚN TIPO DE AVE */}
+
+      {/* Control de Stock de Alimento (Inspirado en El Capataz) */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center flex-shrink-0">
+            <Wheat className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-slate-800">
+              Stock de Alimento en Galpón: <strong className="text-amber-900">{metrics.remainingStockKg} kg</strong> ({metrics.remainingBags40} bolsas)
+            </h4>
+            <p className="text-[11px] text-slate-500">
+              Al ritmo actual ({metrics.todayFeedKg || 4} kg/día), tienen ración asegurada para <strong>{metrics.estimatedDaysOfFeedRemaining} días</strong>.
+            </p>
+          </div>
+        </div>
+        <span className={`text-[10px] font-bold px-2 py-1 rounded-lg border self-start sm:self-auto whitespace-nowrap ${
+          metrics.estimatedDaysOfFeedRemaining <= 7 
+            ? 'bg-rose-100 text-rose-800 border-rose-300 animate-pulse'
+            : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+        }`}>
+          {metrics.estimatedDaysOfFeedRemaining <= 7 ? '⚠️ Comprar pronto' : '✅ Stock con ración'}
+        </span>
+      </div>
       
       {/* 1. MÓDULO PONEDORAS (Huevos) */}
       {isLayer && (

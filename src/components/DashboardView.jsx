@@ -149,6 +149,29 @@ export default function DashboardView({
         </div>
       )}
 
+      {/* Control de Gallinas en Observación por Anillo (Nonna) */}
+      {batch.specialObservations && batch.specialObservations.length > 0 && (
+        <div className="bg-white border border-amber-200 rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+              <h3 className="text-sm font-bold text-slate-800">Gallinas en Observación (Control por Anillo)</h3>
+            </div>
+            <span className="text-[11px] text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
+              {batch.specialObservations.length} identificadas
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-2">
+            {batch.specialObservations.map((obs, idx) => (
+              <div key={idx} className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-2 text-center">
+                <span className="text-xs font-black text-amber-900 block font-mono">#{obs.tag}</span>
+                <span className="text-[11px] text-slate-700 block font-medium">{obs.note}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* 2. MÓDULO PARRILLEROS (Engorde y FCR) */}
       {isBroiler && (
         <div className="bg-white border border-orange-200 rounded-2xl p-4 shadow-sm">

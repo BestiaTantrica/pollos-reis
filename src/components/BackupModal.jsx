@@ -9,9 +9,11 @@ import {
   Copy, 
   Cloud, 
   MessageCircle,
-  HelpCircle
+  HelpCircle,
+  RotateCcw
 } from 'lucide-react';
 import { formatCurrency } from '../utils/poultryMath';
+import { INITIAL_BATCHES } from '../data/defaultData';
 
 export default function BackupModal({ 
   isOpen, 
@@ -185,6 +187,24 @@ export default function BackupModal({
               />
             </label>
           </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (confirm('¿Deseas recargar los datos originales extraídos del chat de La Estanciera?')) {
+                onRestoreData(INITIAL_BATCHES);
+                setRestoreSuccess(true);
+                setTimeout(() => {
+                  setRestoreSuccess(false);
+                  onClose();
+                }, 1200);
+              }
+            }}
+            className="w-full py-2 bg-amber-100/70 hover:bg-amber-200 text-amber-900 border border-amber-300 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 mt-2"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-amber-700" />
+            <span>Recargar datos del chat "La Estanciera"</span>
+          </button>
 
           {restoreSuccess && (
             <div className="text-xs font-bold text-emerald-700 bg-emerald-100 p-2 rounded-lg text-center animate-pulse">

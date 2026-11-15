@@ -13,9 +13,16 @@ import { INITIAL_BATCHES } from './data/defaultData';
 import { calculateBatchMetrics } from './utils/poultryMath';
 
 export default function App() {
-  // Cargar lotes guardados en el almacenamiento del navegador o usar iniciales
+  // Cargar lotes guardados en el almacenamiento del navegador o migrar a datos reales de La Estanciera
   const [batches, setBatches] = useState(() => {
     try {
+      const dataVersion = localStorage.getItem('pollos_reis_data_version');
+      if (dataVersion !== 'v2_la_estanciera') {
+        localStorage.setItem('pollos_reis_data_version', 'v2_la_estanciera');
+        localStorage.setItem('pollos_reis_batches', JSON.stringify(INITIAL_BATCHES));
+        localStorage.setItem('pollos_reis_active_batch', 'lote-la-estanciera-40');
+        return INITIAL_BATCHES;
+      }
       const saved = localStorage.getItem('pollos_reis_batches');
       return saved ? JSON.parse(saved) : INITIAL_BATCHES;
     } catch (e) {
@@ -29,7 +36,7 @@ export default function App() {
     if (savedId && batches.some(b => b.id === savedId)) {
       return savedId;
     }
-    return batches[0]?.id || 'lote-ponedoras-1';
+    return batches[0]?.id || 'lote-la-estanciera-40';
   });
 
   const [activeTab, setActiveTab] = useState('dashboard');

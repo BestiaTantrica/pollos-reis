@@ -1,249 +1,250 @@
-// Datos iniciales y presets para Pollos Reis
+// Datos reales de la granja extraídos del chat "LA ESTANCIERA"
 
 export const GENETIC_PRESETS = {
   // Ponedoras
+  'hyline-brown': {
+    name: 'Hy-Line Brown (Ponedora La Estanciera)',
+    type: 'layer',
+    desc: 'Líder mundial en postura de huevo marrón. Excelente para pastoreo y carro móvil, muy rústica.',
+    peakProduction: 95,
+    targetWeightAdult: 1.95,
+    eggsPerYear: 320,
+    dailyFeedAdult: 110, // gramos por ave por día (~4.4 kg diarios para 40 aves)
+    targetCurves: [
+      { week: 18, eggRate: 5, weight: 1.50 },
+      { week: 20, eggRate: 30, weight: 1.65 },
+      { week: 22, eggRate: 75, weight: 1.78 },
+      { week: 25, eggRate: 94, weight: 1.88 },
+      { week: 35, eggRate: 92, weight: 1.95 },
+      { week: 50, eggRate: 85, weight: 2.00 }
+    ]
+  },
   'lohmann-brown': {
     name: 'Lohmann Brown (Ponedora)',
     type: 'layer',
     desc: 'Excelente ponedora de huevos marrones grandes, muy dócil y resistente.',
-    peakProduction: 94, // % postura pico
-    targetWeightAdult: 2.0, // kg
+    peakProduction: 94,
+    targetWeightAdult: 2.0,
     eggsPerYear: 310,
-    dailyFeedAdult: 115, // gramos por ave por día
-    targetCurves: [
-      { week: 18, eggRate: 15, weight: 1.50 },
-      { week: 20, eggRate: 50, weight: 1.65 },
-      { week: 24, eggRate: 92, weight: 1.85 },
-      { week: 30, eggRate: 94, weight: 1.95 },
-      { week: 40, eggRate: 88, weight: 2.00 },
-      { week: 50, eggRate: 82, weight: 2.05 },
-      { week: 60, eggRate: 76, weight: 2.10 },
-      { week: 70, eggRate: 70, weight: 2.12 },
-    ]
+    dailyFeedAdult: 115
   },
-  'hyline-brown': {
-    name: 'Hy-Line Brown (Ponedora)',
-    type: 'layer',
-    desc: 'Líder mundial en conversión para huevos marrones de cáscara muy fuerte.',
-    peakProduction: 95,
-    targetWeightAdult: 1.95,
-    eggsPerYear: 320,
-    dailyFeedAdult: 110,
-    targetCurves: [
-      { week: 18, eggRate: 20, weight: 1.48 },
-      { week: 22, eggRate: 85, weight: 1.75 },
-      { week: 26, eggRate: 95, weight: 1.90 },
-      { week: 35, eggRate: 90, weight: 1.98 },
-      { week: 50, eggRate: 84, weight: 2.02 },
-      { week: 65, eggRate: 75, weight: 2.05 }
-    ]
-  },
-  // Parrilleros / Engorde
   'cobb-500': {
     name: 'Cobb 500 (Engorde / Parrillero)',
     type: 'broiler',
-    desc: 'El pollo parrillero más popular del mundo. Crecimiento rápido, pechuga carnosa y gran conversión.',
+    desc: 'El pollo parrillero más popular del mundo. Crecimiento rápido y pechuga carnosa.',
     targetFCR: 1.65,
     targetDaysToMarket: 42,
-    targetWeightGrams: 2850,
-    targetCurves: [
-      { day: 7, weight: 190, feedCum: 170 },
-      { day: 14, weight: 480, feedCum: 510 },
-      { day: 21, weight: 970, feedCum: 1180 },
-      { day: 28, weight: 1610, feedCum: 2190 },
-      { day: 35, weight: 2320, feedCum: 3480 },
-      { day: 42, weight: 3010, feedCum: 5020 }
-    ]
+    targetWeightGrams: 2850
   },
-  'ross-308': {
-    name: 'Ross 308 (Engorde / Parrillero)',
-    type: 'broiler',
-    desc: 'Excelente rendimiento de pechuga, rusticidad y tasa de crecimiento uniforme.',
-    targetFCR: 1.62,
-    targetDaysToMarket: 42,
-    targetWeightGrams: 2900,
-    targetCurves: [
-      { day: 7, weight: 195, feedCum: 165 },
-      { day: 14, weight: 490, feedCum: 500 },
-      { day: 21, weight: 990, feedCum: 1160 },
-      { day: 28, weight: 1640, feedCum: 2150 },
-      { day: 35, weight: 2360, feedCum: 3420 },
-      { day: 42, weight: 3080, feedCum: 4950 }
-    ]
-  },
-  // Variedad de Campo / Criollas
   'criolla-mixta': {
-    name: 'Gallina Criolla / Casera de Campo (Mixta)',
+    name: 'Gallinas Mixtas y Comunes de Corral',
     type: 'mixed',
-    desc: 'Aves de traspatio muy rústicas, doble propósito (huevo casero y carne de campo sabrosa). Resisten mejor el clima.',
+    desc: 'Gallinas de campo caseras de doble propósito (huevo campero y carne sabrosa).',
     peakProduction: 65,
     targetWeightAdult: 2.4,
     eggsPerYear: 180,
-    dailyFeedAdult: 120,
-    targetCurves: [
-      { month: 1, weight: 0.35 },
-      { month: 2, weight: 0.80 },
-      { month: 3, weight: 1.40 },
-      { month: 4, weight: 1.90 },
-      { month: 5, weight: 2.30 }
-    ]
+    dailyFeedAdult: 120
   }
 };
 
 export const INITIAL_BATCHES = [
   {
-    id: 'lote-ponedoras-1',
-    name: 'Galpón 1 - Ponedoras Lohmann',
-    type: 'layer', // 'layer', 'broiler', 'mixed'
-    breed: 'lohmann-brown',
-    initialQuantity: 250,
-    startDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // hace 25 días
-    startAgeDays: 126, // ingresaron a las 18 semanas (126 días) listas para postura
-    notes: 'Primer lote de ponedoras marrones. Alimento postura fase 1.',
+    id: 'lote-la-estanciera-40',
+    name: 'La Estanciera - 40 Hy-Line Brown 🐓',
+    type: 'layer',
+    breed: 'hyline-brown',
+    initialQuantity: 40,
+    startDate: '2026-11-01',
+    startAgeDays: 130, // Alrededor de semana 18-19 (iniciando postura en noviembre)
+    notes: 'Plantel de 40 Hy-Line Brown compradas en Cabaña La Escondida. Sistema de carro móvil con pastoreo y redes.',
+    // Registro de gallinas identificadas por anillo en observación
+    specialObservations: [
+      { tag: '072', note: 'Sangre en observación', date: '2026-11-01', status: 'alerta' },
+      { tag: '073', note: 'Caidona', date: '2026-11-01', status: 'recuperada' },
+      { tag: '080', note: 'Caidona', date: '2026-11-01', status: 'atencion' },
+      { tag: '058', note: 'Caidona', date: '2026-11-01', status: 'atencion' },
+      { tag: '009', note: 'Gallina renga', date: '2026-11-11', status: 'cuidado' }
+    ],
     logs: [
       {
-        date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        date: '2026-11-02',
         mortality: 0,
-        feedKg: 28.5,
-        waterLiters: 55,
-        eggsTotal: 205,
-        eggsBroken: 2,
-        eggsDirty: 3,
+        feedKg: 2.0,
+        waterLiters: 15,
+        eggsTotal: 0,
+        eggsBroken: 0,
+        eggsDirty: 0,
         tempC: 22,
-        notes: 'Buen consumo. Agua con electrolitos.'
+        notes: '10:00h Soleado. Levanté cortinas caídas, repuse 2kg balanceado volcado, lavé pisos y bebederos, reparé provisorio comedero.'
       },
       {
-        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        mortality: 1,
-        mortalityReason: 'Prolapso',
-        feedKg: 29.0,
-        waterLiters: 58,
-        eggsTotal: 212,
-        eggsBroken: 1,
-        eggsDirty: 2,
-        tempC: 23,
-        notes: 'Postura en alza.'
-      },
-      {
-        date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        date: '2026-11-03',
         mortality: 0,
-        feedKg: 29.0,
-        waterLiters: 60,
-        eggsTotal: 218,
-        eggsBroken: 3,
-        eggsDirty: 2,
+        feedKg: 4.0, // 2kg + 1.5kg balanceado + 500g maíz
+        waterLiters: 15,
+        eggsTotal: 0,
+        eggsBroken: 0,
+        eggsDirty: 0,
+        tempC: 20,
+        notes: 'Lluvia 14:00. Se cambió canilla del patito del tanque. Cortinas al sur por lluvia. 1.5kg balanceado + 500g maíz.'
+      },
+      {
+        date: '2026-11-04',
+        mortality: 0,
+        feedKg: 4.0,
+        waterLiters: 18,
+        eggsTotal: 0,
+        eggsBroken: 0,
+        eggsDirty: 0,
+        tempC: 23,
+        notes: 'Prueba de verduras: Menta picada 👍, Zanahoria rallada 🤏, Repollo blanco 👎. Control de agua y comederos.'
+      },
+      {
+        date: '2026-11-05',
+        mortality: 0,
+        feedKg: 4.0,
+        waterLiters: 18,
+        eggsTotal: 0,
+        eggsBroken: 0,
+        eggsDirty: 0,
         tempC: 24,
-        notes: 'Excelente calidad de cáscara.'
+        notes: 'Primer día libre. Se movió el carro y se colocaron redes. Apertura de techos. Vigilar chimangos.'
+      },
+      {
+        date: '2026-11-06',
+        mortality: 0,
+        feedKg: 4.0,
+        waterLiters: 16,
+        eggsTotal: 0,
+        eggsBroken: 0,
+        eggsDirty: 0,
+        tempC: 21,
+        notes: 'Las perchas funcionaron bien, estaban en las más altas. Apertura de techos.'
+      },
+      {
+        date: '2026-11-08',
+        mortality: 0,
+        feedKg: 8.0, // 4kg a las 07:00 + 4kg a las 12:45
+        waterLiters: 20,
+        eggsTotal: 0,
+        eggsBroken: 0,
+        eggsDirty: 0,
+        tempC: 22,
+        notes: '07:00 fresco. 4kg balanceado + maíz. 12:45 repuse otros 4kg. Baldeo. Salida ordenada por minipuerta.'
+      },
+      {
+        date: '2026-11-09',
+        mortality: 0,
+        feedKg: 4.0,
+        waterLiters: 18,
+        eggsTotal: 0,
+        eggsBroken: 0,
+        eggsDirty: 0,
+        tempC: 23,
+        notes: '07:00 Soleado. 4kg balanceado + extras. Baldeo del gallinero.'
+      },
+      {
+        date: '2026-11-10',
+        mortality: 0,
+        feedKg: 4.0,
+        waterLiters: 20,
+        eggsTotal: 1, // ¡PRIMER HUEVO!
+        eggsBroken: 0,
+        eggsDirty: 0,
+        tempC: 24,
+        notes: '🥚 ¡PRIMER HUEVO DE LA COSECHA! Huevo fresco de 47 gramos. Se quitó tabla de los nidos.'
+      },
+      {
+        date: '2026-11-11',
+        mortality: 0,
+        feedKg: 8.0, // 4kg mañana + 4kg mediodía
+        waterLiters: 18,
+        eggsTotal: 0,
+        eggsBroken: 0,
+        eggsDirty: 0,
+        tempC: 23,
+        notes: '07:00 y 12:00. Ración de conchilla. Numeración de lote. Gallina 009 renga.'
+      },
+      {
+        date: '2026-11-13',
+        mortality: 0,
+        feedKg: 8.0, // 4kg Dapa + 4kg La Palmera
+        waterLiters: 16,
+        eggsTotal: 2,
+        eggsBroken: 0,
+        eggsDirty: 0,
+        tempC: 21,
+        notes: 'Llovizna. 4kg balanceado Dapa + 4kg La Palmera. Inicio tratamiento: Rumivitam 1cm3/L + Piperazina 1g/L + chorro vinagre.'
+      },
+      {
+        date: '2026-11-14',
+        mortality: 0,
+        feedKg: 4.0, // 4kg La Palmera
+        waterLiters: 16,
+        eggsTotal: 5, // ¡5 HUEVOS!
+        eggsBroken: 0,
+        eggsDirty: 0,
+        tempC: 22,
+        notes: 'POSTURA: 5 huevos. 4kg balanceado La Palmera. Día 2 tratamiento Rumivitam + Piperazina + vinagre.'
+      },
+      {
+        date: '2026-11-15',
+        mortality: 0,
+        feedKg: 4.0,
+        waterLiters: 16,
+        eggsTotal: 6,
+        eggsBroken: 0,
+        eggsDirty: 0,
+        tempC: 21,
+        notes: 'Cambio de parcela en pastoreo. Gallinero semi abierto. Día 3 tratamiento Rumivitam 1cm3 + Piperazina 1g/L + vinagre.'
       }
     ],
     vaccines: [
-      { name: 'Marek (en incubadora)', day: 1, date: '2026-08-01', applied: true },
-      { name: 'Newcastle + Bronquitis', day: 21, date: '2026-08-22', applied: true },
-      { name: 'Gumboro Refuerzo', day: 35, date: '2026-09-05', applied: true },
-      { name: 'Triple Aviar (Oleosa)', day: 110, date: '2026-11-01', applied: true },
+      { name: 'Plan Cabaña La Escondida (Marek)', day: 1, date: '2026-07-01', applied: true },
+      { name: 'Newcastle + Bronquitis (La Escondida)', day: 21, date: '2026-07-22', applied: true },
+      { name: 'Gumboro (La Escondida)', day: 35, date: '2026-08-05', applied: true },
+      { name: 'Triple Aviar (La Escondida)', day: 110, date: '2026-10-15', applied: true }
     ],
     treatments: [
       {
-        name: 'Complejo Vitamínico AD3E',
-        startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        id: 1,
+        name: 'Rumivitam (Vitamina) + Piperazina 100 (Antiparasitario) + Vinagre',
+        startDate: '2026-11-13',
         daysDuration: 3,
-        withdrawalDays: 0, // no tiene retiro
-        notes: 'Estimulante al inicio de postura'
+        withdrawalDays: 1, // Retiro preventivo
+        notes: '1 cm3 Rumivitam x litro + 1 g Piperazina 100 x litro de agua + chorrito de vinagre de manzana.'
       }
     ],
     finances: {
       expenses: [
-        { id: 1, concept: 'Compra de 250 pollas de 18 semanas', category: 'aves', amount: 1250000, date: '2026-10-20' },
-        { id: 2, concept: 'Alimento Postura (10 bolsas de 40kg)', category: 'alimento', amount: 320000, date: '2026-10-22' },
-        { id: 3, concept: 'Vitaminas y Calcio', category: 'sanidad', amount: 45000, date: '2026-10-25' },
-        { id: 4, concept: 'Viruta limpia para nidos', category: 'instalaciones', amount: 30000, date: '2026-10-21' }
+        { id: 1, concept: 'Compra Plantel 40 pollas Hy-Line Brown (La Escondida)', category: 'aves', amount: 240000, date: '2026-10-28' },
+        { id: 2, concept: 'Alimento Balanceado Dapa y La Palmera', category: 'alimento', amount: 48000, date: '2026-11-01' },
+        { id: 3, concept: 'Maíz partido + Conchilla de calcio', category: 'alimento', amount: 15000, date: '2026-11-03' },
+        { id: 4, concept: 'Antiparasitario Piperazina 100 y Rumivitam', category: 'sanidad', amount: 22000, date: '2026-11-12' },
+        { id: 5, concept: 'Canilla de repuesto y accesorios tanque', category: 'instalaciones', amount: 8500, date: '2026-11-03' }
       ],
       sales: [
-        { id: 101, concept: 'Venta de 15 maples de huevos frescos', quantity: 15, unit: 'maple', unitPrice: 4200, total: 63000, date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] },
-        { id: 102, concept: 'Venta de 18 maples a verdulería vecina', quantity: 18, unit: 'maple', unitPrice: 4200, total: 75600, date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] }
+        { id: 101, concept: 'Cosecha inicial de huevos frescos de campo (consumo familiar / primeros maples)', quantity: 14, unit: 'huevo', unitPrice: 350, total: 4900, date: '2026-11-15' }
       ]
     }
   },
   {
-    id: 'lote-parrilleros-1',
-    name: 'Galpón 2 - Parrilleros Cobb 500',
-    type: 'broiler',
-    breed: 'cobb-500',
-    initialQuantity: 300,
-    startDate: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // hace 21 días (día 21 de vida)
-    startAgeDays: 1, // entraron como BBs de 1 día
-    notes: 'Lote de engorde de verano. Cama de cáscara de arroz nueva.',
-    logs: [
-      {
-        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        mortality: 1,
-        mortalityReason: 'Aplastamiento',
-        feedKg: 34.0,
-        waterLiters: 70,
-        avgSampleWeightGrams: 910,
-        tempC: 25,
-        notes: 'Fin de etapa iniciador, pasando a terminador.'
-      },
-      {
-        date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        mortality: 0,
-        feedKg: 36.5,
-        waterLiters: 75,
-        avgSampleWeightGrams: 985,
-        tempC: 24,
-        notes: 'Excelente vitalidad. Ganancia de peso en curva ideal.'
-      }
-    ],
-    vaccines: [
-      { name: 'Marek (incubadora)', day: 1, date: '2026-10-25', applied: true },
-      { name: 'Bronquitis Infecciosa (H120 en gota ocular)', day: 1, date: '2026-10-25', applied: true },
-      { name: 'Gumboro intermedia', day: 12, date: '2026-11-06', applied: true },
-      { name: 'Newcastle Clon 30', day: 18, date: '2026-11-12', applied: true }
-    ],
-    treatments: [],
-    finances: {
-      expenses: [
-        { id: 201, concept: 'Compra 300 pollitos BB Cobb 500', category: 'aves', amount: 360000, date: '2026-10-25' },
-        { id: 202, concept: 'Alimento Iniciador (6 bolsas x 40kg)', category: 'alimento', amount: 198000, date: '2026-10-25' },
-        { id: 203, concept: 'Garrafa gas para campana calefactora', category: 'energia', amount: 35000, date: '2026-10-26' }
-      ],
-      sales: []
-    }
-  },
-  {
-    id: 'lote-variedad-campo',
-    name: 'Sector Corral - Gallinas Criollas y Caseras',
+    id: 'corral-2-mixtas',
+    name: 'Gallinero 2 - Gallinas Mixtas / Comunes 🐓',
     type: 'mixed',
     breed: 'criolla-mixta',
-    initialQuantity: 45,
-    startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    startAgeDays: 60,
-    notes: 'Gallinas criollas de libre pastoreo y corral. Variedad de colores.',
-    logs: [
-      {
-        date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        mortality: 0,
-        feedKg: 5.5,
-        waterLiters: 12,
-        eggsTotal: 22,
-        eggsBroken: 0,
-        eggsDirty: 1,
-        tempC: 21,
-        notes: 'Pastorean durante la tarde. Grano de maíz molido + sobras de huerta.'
-      }
-    ],
+    initialQuantity: 20, // Esperando datos exactos del usuario
+    startDate: '2026-11-01',
+    startAgeDays: 180,
+    notes: 'Segundo corral de gallinas criollas y comunes de campo. Pendiente de cargar cantidades exactas.',
+    logs: [],
     vaccines: [
-      { name: 'Triple aviar y desparasitante interno', day: 45, date: '2026-10-15', applied: true }
+      { name: 'Desparasitante interno y vitaminas', day: 60, applied: true }
     ],
     treatments: [],
     finances: {
-      expenses: [
-        { id: 301, concept: 'Maíz partido y núcleo casero', category: 'alimento', amount: 42000, date: '2026-10-10' }
-      ],
-      sales: [
-        { id: 302, concept: 'Venta de 5 docenas huevos camperos', quantity: 5, unit: 'docena', unitPrice: 2000, total: 10000, date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] }
-      ]
+      expenses: [],
+      sales: []
     }
   }
 ];
-

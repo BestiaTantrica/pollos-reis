@@ -1,0 +1,17 @@
+{
+  "name": "Pollos Reis - Granja Avícola",
+  "short_name": "Pollos Reis",
+  "description": "Control y gestión de granja avícola para ponedoras, parrilleros y variedad",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#b45309",
+  "icons": [
+    {
+      "src": "/chicken.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

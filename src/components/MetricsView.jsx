@@ -285,3 +285,4 @@ export default function MetricsView({ batch, metrics }) {
     </div>
   );
 }
+

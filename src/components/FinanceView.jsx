@@ -389,3 +389,4 @@ export default function FinanceView({ batch, onAddExpense, onDeleteExpense, onAd
     </div>
   );
 }
+

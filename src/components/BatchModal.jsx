@@ -267,3 +267,4 @@ export default function BatchModal({ isOpen, onClose, onSaveBatch, onDeleteBatch
     </div>
   );
 }
+

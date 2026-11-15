@@ -62,3 +62,4 @@ npx surge dist pollos-reis.surge.sh
 5. **Asistente Avícola IA y Guía:**
    * Respuestas instantáneas sobre temperatura de pollitos BB, manejo de calor extremo, coccidiosis, iluminación y más.
    * Glosario y explicaciones paso a paso para que cualquier miembro de la familia entienda las métricas.
+

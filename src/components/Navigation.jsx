@@ -86,3 +86,4 @@ export function DesktopNavigation({ activeTab, onSelectTab }) {
     </div>
   );
 }
+

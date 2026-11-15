@@ -10,10 +10,12 @@ import {
   Skull, 
   Thermometer, 
   CheckCircle2, 
-  Trash2,
+  Trash2, 
   Calendar,
-  Sparkles
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
+import { parseNaturalLog } from '../utils/naturalLanguageParser';
 
 export default function DailyLogView({ batch, onSaveLog, onDeleteLog, metrics }) {
   const todayStr = new Date().toISOString().split('T')[0];
@@ -38,6 +40,39 @@ export default function DailyLogView({ batch, onSaveLog, onDeleteLog, metrics })
   const [tempC, setTempC] = useState(24);
   const [notes, setNotes] = useState('');
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // ESTADO PARA CARGA INTELIGENTE POR LENGUAJE NATURAL ("Che, hoy...")
+  const [naturalText, setNaturalText] = useState('');
+  const [parsedPreview, setParsedPreview] = useState(null);
+
+  const handleNaturalInput = (text) => {
+    setNaturalText(text);
+    if (text.trim().length > 3) {
+      const parsed = parseNaturalLog(text, batch.type);
+      setParsedPreview(parsed);
+    } else {
+      setParsedPreview(null);
+    }
+  };
+
+  const handleApplyNaturalParsed = () => {
+    if (!parsedPreview) return;
+    if (parsedPreview.mortality > 0) {
+      setMortality(parsedPreview.mortality);
+      if (parsedPreview.mortalityReason) setMortalityReason(parsedPreview.mortalityReason);
+    }
+    if (parsedPreview.eggsTotal > 0) setEggsTotal(parsedPreview.eggsTotal);
+    if (parsedPreview.eggsBroken > 0) setEggsBroken(parsedPreview.eggsBroken);
+    if (parsedPreview.eggsDirty > 0) setEggsDirty(parsedPreview.eggsDirty);
+    if (parsedPreview.feedKg > 0) setFeedKg(parsedPreview.feedKg);
+    if (parsedPreview.waterLiters > 0) setWaterLiters(parsedPreview.waterLiters);
+    if (parsedPreview.avgSampleWeightGrams > 0) setAvgSampleWeightGrams(parsedPreview.avgSampleWeightGrams);
+    if (parsedPreview.notes) {
+      setNotes(prev => prev ? `${prev} | ${parsedPreview.notes}` : parsedPreview.notes);
+    }
+    setNaturalText('');
+    setParsedPreview(null);
+  };
 
   // Calculadora rápida de pesaje grupal
   const handleCalculateAvgWeight = () => {
@@ -99,6 +134,79 @@ export default function DailyLogView({ batch, onSaveLog, onDeleteLog, metrics })
             className="text-xs font-semibold bg-white border border-slate-300 rounded-lg px-2 py-1 text-slate-700 focus:ring-2 focus:ring-amber-500"
           />
         </div>
+      </div>
+
+      {/* NOVEDAD: ASISTENTE DE CARGA POR PALABRAS SENCILLAS ("Che, hoy...") */}
+      <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100 border-2 border-amber-300 rounded-2xl p-4 shadow-sm">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-7 h-7 rounded-lg bg-amber-600 text-white flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-yellow-200 animate-pulse" />
+          </div>
+          <div>
+            <h3 className="text-xs sm:text-sm font-black text-amber-950">
+              Carga Inteligente con Lenguaje Natural (Sin tecnicismos)
+            </h3>
+            <p className="text-[11px] text-amber-800">
+              Escribe o dicta lo que pasó hoy en el galpón y la IA llenará la planilla por ti:
+            </p>
+          </div>
+        </div>
+
+        <div className="relative mt-2">
+          <input
+            type="text"
+            placeholder="ej: 'Che hoy murieron 2 por calor, sacamos 45 huevos con 3 feos y comieron 30 kilos'"
+            value={naturalText}
+            onChange={(e) => handleNaturalInput(e.target.value)}
+            className="w-full text-xs sm:text-sm p-3 bg-white border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 pr-10 shadow-inner"
+          />
+        </div>
+
+        {/* Ejemplos para tocar rápido */}
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          <span className="text-[10px] text-amber-800 font-bold self-center">Ejemplos:</span>
+          {[
+            'Che hay dos gallinas flacas y tres huevos feos',
+            'Murieron 2 aplastados y sacamos 7 maples de huevos',
+            'Comieron 1 bolsa de 40 kilos y tomaron 70 litros'
+          ].map((sample, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleNaturalInput(sample)}
+              className="text-[10px] bg-white/80 hover:bg-white text-slate-700 px-2 py-0.5 rounded-lg border border-amber-200/80 transition"
+            >
+              "{sample}"
+            </button>
+          ))}
+        </div>
+
+        {/* Vista previa de lo que entendió la IA */}
+        {parsedPreview && parsedPreview.detected && (
+          <div className="mt-3 p-3 bg-white rounded-xl border border-amber-300 shadow-sm">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span>La IA entendió estos datos:</span>
+              </span>
+              <button
+                type="button"
+                onClick={handleApplyNaturalParsed}
+                className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white rounded-lg text-xs font-black shadow-sm flex items-center gap-1 transition"
+              >
+                <span>Cargar al Formulario</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {parsedPreview.summary.map((item, idx) => (
+                <span key={idx} className="bg-amber-100 text-amber-900 text-xs font-bold px-2 py-0.5 rounded-md">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {savedSuccess && (
@@ -240,7 +348,7 @@ export default function DailyLogView({ batch, onSaveLog, onDeleteLog, metrics })
             {/* Clasificación rápida de rotos y sucios */}
             <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-amber-100">
               <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                <span className="text-xs text-slate-600 block mb-1">Huevos Rotos:</span>
+                <span className="text-xs text-slate-600 block mb-1">Huevos Rotos / Feos:</span>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -414,7 +522,7 @@ export default function DailyLogView({ batch, onSaveLog, onDeleteLog, metrics })
             </label>
             <input
               type="text"
-              placeholder="ej. Se agregó viruta seca en comederos. Canto vigoroso."
+              placeholder="ej. Dos gallinas flacas apartadas en enfermería. Canto vigoroso."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-amber-500"

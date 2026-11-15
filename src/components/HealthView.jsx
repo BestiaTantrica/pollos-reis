@@ -281,3 +281,4 @@ export default function HealthView({ batch, onUpdateVaccines, onAddTreatment, on
     </div>
   );
 }
+

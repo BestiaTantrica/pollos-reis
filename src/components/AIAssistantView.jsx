@@ -9,22 +9,27 @@ import {
   Lightbulb, 
   Key, 
   Check, 
-  ExternalLink 
+  CheckCircle2,
+  ArrowRight,
+  ClipboardCheck
 } from 'lucide-react';
 import { POULTRY_KNOWLEDGE_BASE, findPoultryAnswer } from '../data/poultryKnowledge';
+import { parseNaturalLog } from '../utils/naturalLanguageParser';
 
-export default function AIAssistantView({ batch, metrics }) {
+export default function AIAssistantView({ batch, metrics, onSaveLog }) {
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
       text: `¡Hola familia granjera! Soy el **Asistente Avícola Inteligente de Pollos Reis**. 
       
-Estoy aquí para ayudarlos con:
-1. **Dudas sobre la App:** Cómo cargar datos, qué significan los gráficos y fórmulas.
-2. **Manejo de Aves:** Temperatura para pollitos, horas de luz en ponedoras, qué hacer ante olas de calor o enfermedades comunes.
-3. **Cálculos y Costos:** FCR (conversión), postura diaria y rentabilidad.
+Ahora cuento con **Carga Conversacional Directa**:
+Si me dices cosas como:
+* *"Che, hay dos gallinas flacas y tres huevos feos"*
+* *"Murieron 2 pollos por calor y sacamos 210 huevos con 1 bolsa de comida"*
 
-¿Sobre qué te gustaría consultar hoy? Puedes tocar una de las preguntas rápidas de abajo o escribirme lo que quieras.`
+...yo mismo detectaré las cantidades y te daré un botón para **cargar la planilla automáticamente** sin que toques ningún formulario técnico.
+
+¿Qué pasó hoy en el galpón o qué duda tienes?`
     }
   ]);
 
@@ -32,15 +37,16 @@ Estoy aquí para ayudarlos con:
   const [geminiApiKey, setGeminiApiKey] = useState(() => localStorage.getItem('pollos_reis_gemini_key') || '');
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [lastSavedNotice, setLastSavedNotice] = useState(null);
 
   const quickQuestions = [
+    'Che hay dos gallinas flacas y tres huevos feos',
     '¿Cómo cargo los datos de hoy en 30 segundos?',
     '¿Qué es el FCR y cómo sé si mi lote va bien?',
     '¿Cuántas horas de luz necesitan las ponedoras?',
     '¿Qué temperatura necesitan los pollitos BB?',
     '¿Qué hacer en días de calor extremo?',
-    '¿Qué significa si veo sangre en la cama (coccidiosis)?',
-    '¿Qué es el período de retiro de un remedio?'
+    '¿Qué significa si veo sangre en la cama (coccidiosis)?'
   ];
 
   const handleAsk = async (queryText) => {
@@ -53,7 +59,27 @@ Estoy aquí para ayudarlos con:
     setInputQuery('');
     setIsThinking(true);
 
-    // Si tiene Gemini API Key configurada, podemos consultar a Gemini en vivo
+    // 1. REVISAR SI ES UNA INSTRUCCIÓN DE CARGA DE DATOS ("che hoy...", "murieron...", "huevos...")
+    const parsed = parseNaturalLog(q, batch.type);
+    if (parsed && parsed.detected) {
+      setTimeout(() => {
+        let replyText = `🐔 **¡Entendido perfectamente!** Extraje los siguientes datos para el lote **${batch.name}**:\n\n`;
+        parsed.summary.forEach(s => {
+          replyText += `• ${s}\n`;
+        });
+        replyText += `\n¿Deseas guardar este registro ahora mismo en la base de datos de la granja?`;
+
+        setMessages([...newHistory, { 
+          sender: 'bot', 
+          text: replyText,
+          parsedData: parsed
+        }]);
+        setIsThinking(false);
+      }, 350);
+      return;
+    }
+
+    // 2. SI TIENE GEMINI API KEY EN VIVO
     if (geminiApiKey) {
       try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
@@ -65,6 +91,7 @@ Estoy aquí para ayudarlos con:
                 text: `Eres el asesor técnico avícola de la granja familiar "Pollos Reis". Responde en español sencillo, cálido y práctico para personas que atienden galpones de pollos de engorde y gallinas ponedoras.
                 
 Contexto del lote actual:
+- Lote: ${batch.name}
 - Tipo: ${batch.type}
 - Raza: ${batch.breed}
 - Aves vivas: ${metrics.currentLivingBirds}
@@ -89,13 +116,42 @@ Pregunta del granjero: "${q}"`
       }
     }
 
-    // Respuesta del motor de conocimiento local (instantáneo y sin internet)
+    // 3. RESPUESTA DEL MOTOR LOCAL AVÍCOLA
     setTimeout(() => {
       const match = findPoultryAnswer(q);
       const botResponse = match ? match.answer : 'No entendí la consulta, pero recuerda: agua limpia y cama seca siempre.';
       setMessages([...newHistory, { sender: 'bot', text: botResponse }]);
       setIsThinking(false);
     }, 400);
+  };
+
+  const handleApplyLogFromBot = (parsedData) => {
+    if (!onSaveLog || !parsedData) return;
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    const newLog = {
+      date: todayStr,
+      mortality: parsedData.mortality || 0,
+      mortalityReason: parsedData.mortalityReason || '',
+      feedKg: parsedData.feedKg || (batch.type === 'layer' ? 29 : 35),
+      waterLiters: parsedData.waterLiters || (batch.type === 'layer' ? 60 : 70),
+      tempC: 24,
+      notes: parsedData.notes || 'Cargado vía Asistente IA'
+    };
+
+    if (batch.type === 'layer' || batch.type === 'mixed') {
+      newLog.eggsTotal = parsedData.eggsTotal || (batch.type === 'layer' ? 215 : 20);
+      newLog.eggsBroken = parsedData.eggsBroken || 0;
+      newLog.eggsDirty = parsedData.eggsDirty || 0;
+    }
+
+    if (parsedData.avgSampleWeightGrams) {
+      newLog.avgSampleWeightGrams = parsedData.avgSampleWeightGrams;
+    }
+
+    onSaveLog(batch.id, newLog);
+    setLastSavedNotice('¡Registro cargado y guardado con éxito en la planilla!');
+    setTimeout(() => setLastSavedNotice(null), 3000);
   };
 
   const handleSaveKey = (e) => {
@@ -115,7 +171,7 @@ Pregunta del granjero: "${q}"`
           <div>
             <h2 className="text-base font-black">Asistente Avícola Virtual</h2>
             <p className="text-xs text-amber-100">
-              Respuestas instantáneas de galpón y guía de la aplicación
+              Carga conversacional ("Che hoy pasó...") y respuestas de galpón
             </p>
           </div>
         </div>
@@ -130,9 +186,16 @@ Pregunta del granjero: "${q}"`
           title="Configurar clave gratuita Gemini para respuestas ilimitadas"
         >
           <Key className="w-3.5 h-3.5" />
-          <span>{geminiApiKey ? 'IA En Vivo Conectada' : 'Modo Offline (Local)'}</span>
+          <span>{geminiApiKey ? 'IA En Vivo' : 'Modo Offline'}</span>
         </button>
       </div>
+
+      {lastSavedNotice && (
+        <div className="bg-emerald-600 text-white p-3 rounded-xl flex items-center gap-2 shadow-md animate-bounce text-sm font-bold">
+          <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+          <span>{lastSavedNotice}</span>
+        </div>
+      )}
 
       {/* Modal de Configuración de API Key (Opcional) */}
       {showKeyModal && (
@@ -170,7 +233,7 @@ Pregunta del granjero: "${q}"`
       <div>
         <span className="text-xs font-bold text-slate-700 block mb-1.5 flex items-center gap-1.5">
           <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
-          <span>Preguntas frecuentes para tocar en 1 toque:</span>
+          <span>Prueba tocando una de estas frases:</span>
         </span>
         <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
           {quickQuestions.map((q, i) => (
@@ -186,8 +249,8 @@ Pregunta del granjero: "${q}"`
       </div>
 
       {/* Ventana de Conversación */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm min-h-[300px] flex flex-col justify-between">
-        <div className="space-y-3 mb-4 max-h-[420px] overflow-y-auto pr-1">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm min-h-[320px] flex flex-col justify-between">
+        <div className="space-y-3 mb-4 max-h-[440px] overflow-y-auto pr-1">
           {messages.map((m, i) => (
             <div
               key={i}
@@ -206,7 +269,20 @@ Pregunta del granjero: "${q}"`
                     : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-tl-none whitespace-pre-wrap'
                 }`}
               >
-                {m.text}
+                <div>{m.text}</div>
+
+                {/* BOTÓN DE ACCIÓN SI DETECTÓ DATOS PARA GUARDAR */}
+                {m.parsedData && (
+                  <div className="mt-3 pt-2.5 border-t border-slate-200 flex items-center justify-end">
+                    <button
+                      onClick={() => handleApplyLogFromBot(m.parsedData)}
+                      className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl text-xs font-black shadow-md flex items-center gap-1.5 transition"
+                    >
+                      <ClipboardCheck className="w-4 h-4" />
+                      <span>Guardar en el Lote ({batch.name})</span>
+                    </button>
+                  </div>
+                )}
               </div>
 
               {m.sender === 'user' && (
@@ -220,12 +296,12 @@ Pregunta del granjero: "${q}"`
           {isThinking && (
             <div className="flex items-center gap-2 text-xs text-slate-500 italic">
               <Bot className="w-4 h-4 animate-spin text-amber-600" />
-              <span>Analizando consulta avícola...</span>
+              <span>Analizando mensaje y extrayendo datos...</span>
             </div>
           )}
         </div>
 
-        {/* Input para escribir preguntas */}
+        {/* Input para escribir preguntas o dictar el día */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -235,7 +311,7 @@ Pregunta del granjero: "${q}"`
         >
           <input
             type="text"
-            placeholder="Escribe tu consulta sobre pollos o la app..."
+            placeholder="Dile a la IA qué pasó hoy o haz una pregunta..."
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
             className="flex-1 text-xs p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500"

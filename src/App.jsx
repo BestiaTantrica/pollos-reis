@@ -278,6 +278,7 @@ export default function App() {
           <AIAssistantView
             batch={currentBatch}
             metrics={metrics}
+            onSaveLog={handleSaveLog}
           />
         )}
       </main>
@@ -313,3 +314,4 @@ export default function App() {
     </div>
   );
 }
+

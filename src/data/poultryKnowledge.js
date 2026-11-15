@@ -163,3 +163,4 @@ export function findPoultryAnswer(query) {
 *Tip:* Prueba preguntando por: "FCR", "Postura", "Horas de luz", "Temperatura", "Calor", "Coccidiosis", "Retiro" o "Cómo cargar datos".`
   };
 }
+

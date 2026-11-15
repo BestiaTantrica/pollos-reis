@@ -150,3 +150,4 @@ export function parseNaturalLog(text, currentBatchType = 'layer') {
 
   return result;
 }
+
